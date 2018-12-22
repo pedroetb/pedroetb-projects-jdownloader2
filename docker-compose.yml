@@ -1,42 +1,20 @@
-version: '3.7'
+version: '2.4'
 
 services:
   jdownloader2:
     image: jaymoulin/jdownloader:${IMAGE_TAG:-latest}
-    networks:
-      - jdownloader2-net
-    ports:
-      - target: ${JDOWNLOADER2_DATA_PORT}
-        published: ${JDOWNLOADER2_DATA_PORT}
-        protocol: tcp
-        mode: ${JDOWNLOADER2_PORT_MODE}
-      - target: ${JDOWNLOADER2_DATA_PORT}
-        published: ${JDOWNLOADER2_DATA_PORT}
-        protocol: udp
-        mode: ${JDOWNLOADER2_PORT_MODE}
+    container_name: ${JDOWNLOADER2_CONTAINER_NAME:-jdownloader2}
     volumes:
       - config-vol:/opt/JDownloader/cfg
       - data-vol:/root/Downloads
-    deploy:
-      mode: replicated
-      replicas: ${JDOWNLOADER2_REPLICAS:-1}
-      restart_policy:
-        delay: ${JDOWNLOADER2_RESTART_POLICY_DELAY:-10s}
-        window: ${JDOWNLOADER2_RESTART_POLICY_WINDOW:-1m}
-      resources:
-        limits:
-          cpus: "${JDOWNLOADER2_LIMITS_CPUS:-1}"
-          memory: ${JDOWNLOADER2_LIMITS_MEMORY:-256M}
-        reservations:
-          memory: ${JDOWNLOADER2_RESERVATIONS_MEMORY:-64M}
-
-networks:
-  jdownloader2-net:
-    name: ${JDOWNLOADER2_NET_NAME:-jdownloader2-net}
-    driver: overlay
-    attachable: ${JDOWNLOADER2_NET_ATTACHABLE:-true}
+    restart: always
+    mem_limit: ${JDOWNLOADER2_MEM_LIMIT:-256M}
+    mem_reservation: ${JDOWNLOADER2_MEM_RESERVATION:-64M}
 
 volumes:
+  config-vol:
+    name: ${JDOWNLOADER2_CONFIG_VOL_NAME:-jdownloader2-config-vol}
+
   data-vol:
     name: ${JDOWNLOADER2_DATA_VOL_NAME:-jdownloader2-data-vol}
     driver: local
@@ -44,6 +22,3 @@ volumes:
       type: ${JDOWNLOADER2_DATA_VOLUME_TYPE}
       o: ${JDOWNLOADER2_DATA_VOLUME_OPTIONS}
       device: ${JDOWNLOADER2_DATA_VOLUME_DEVICE}
-
-  config-vol:
-    name: ${JDOWNLOADER2_CONFIG_VOL_NAME:-jdownloader2-config-vol}
