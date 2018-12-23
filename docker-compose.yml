@@ -4,12 +4,18 @@ services:
   jdownloader2:
     image: jaymoulin/jdownloader:${IMAGE_TAG:-latest}
     container_name: ${JDOWNLOADER2_CONTAINER_NAME:-jdownloader2}
+    networks:
+      - jdownloader2-net
     volumes:
       - config-vol:/opt/JDownloader/cfg
       - data-vol:/root/Downloads
     restart: always
     mem_limit: ${JDOWNLOADER2_MEM_LIMIT:-256M}
-    mem_reservation: ${JDOWNLOADER2_MEM_RESERVATION:-64M}
+    mem_reservation: ${JDOWNLOADER2_MEM_RESERVATION:-128M}
+
+networks:
+  jdownloader2-net:
+    name: ${JDOWNLOADER2_NET_NAME:-jdownloader2-net}
 
 volumes:
   config-vol:
