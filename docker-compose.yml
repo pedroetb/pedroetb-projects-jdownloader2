@@ -1,30 +1,84 @@
-version: '2.4'
+version: '3.7'
 
 services:
   jdownloader2:
     image: jaymoulin/jdownloader:${IMAGE_TAG:-latest}
-    container_name: ${JDOWNLOADER2_CONTAINER_NAME:-jdownloader2}
     networks:
-      - jdownloader2-net
+      - jd2-net
+    ports:
+      - target: ${JD2_DATA_PORT}
+        published: ${JD2_DATA_PORT}
+        protocol: tcp
+        mode: ${JD2_PORT_MODE}
+      - target: ${JD2_DATA_PORT}
+        published: ${JD2_DATA_PORT}
+        protocol: udp
+        mode: ${JD2_PORT_MODE}
     volumes:
-      - config-vol:/opt/JDownloader/cfg
       - data-vol:/root/Downloads
-    restart: always
-    mem_limit: ${JDOWNLOADER2_MEM_LIMIT:-256M}
-    mem_reservation: ${JDOWNLOADER2_MEM_RESERVATION:-128M}
+      - cfg-vol:/opt/JDownloader/cfg
+      - update-vol:/opt/JDownloader/update
+      - jd-vol:/opt/JDownloader/jd
+      - libs-vol:/opt/JDownloader/libs
+      - extensions-vol:/opt/JDownloader/extensions
+      - tools-vol:/opt/JDownloader/tools
+      - translations-vol:/opt/JDownloader/translations
+      - themes-vol:/opt/JDownloader/themes
+      - licenses-vol:/opt/JDownloader/licenses
+    deploy:
+      mode: replicated
+      replicas: ${JD2_REPLICAS:-1}
+      restart_policy:
+        delay: ${JD2_RESTART_POLICY_DELAY:-5s}
+        window: ${JD2_RESTART_POLICY_WINDOW:-2m}
+      placement:
+        constraints:
+          - ${JD2_PLACEMENT_CONSTRAINT_NAME} == ${JD2_PLACEMENT_CONSTRAINT_VALUE}
+      resources:
+        limits:
+          cpus: "${JD2_LIMITS_CPUS:-1}"
+          memory: ${JD2_LIMITS_MEMORY:-256M}
+        reservations:
+          memory: ${JD2_RESERVATIONS_MEMORY:-128M}
 
 networks:
-  jdownloader2-net:
-    name: ${JDOWNLOADER2_NET_NAME:-jdownloader2-net}
+  jd2-net:
+    name: ${JD2_NET_NAME:-jd2-net}
+    driver: overlay
+    attachable: ${JD2_NET_ATTACHABLE:-true}
 
 volumes:
-  config-vol:
-    name: ${JDOWNLOADER2_CONFIG_VOL_NAME:-jdownloader2-config-vol}
-
   data-vol:
-    name: ${JDOWNLOADER2_DATA_VOL_NAME:-jdownloader2-data-vol}
+    name: ${JD2_DATA_VOL_NAME:-jd2-data-vol}
     driver: local
     driver_opts:
-      type: ${JDOWNLOADER2_DATA_VOLUME_TYPE}
-      o: ${JDOWNLOADER2_DATA_VOLUME_OPTIONS}
-      device: ${JDOWNLOADER2_DATA_VOLUME_DEVICE}
+      type: ${JD2_DATA_VOLUME_TYPE}
+      o: ${JD2_DATA_VOLUME_OPTIONS}
+      device: ${JD2_DATA_VOLUME_DEVICE}
+
+  cfg-vol:
+    name: ${JD2_CFG_VOL_NAME:-jd2-cfg-vol}
+
+  update-vol:
+    name: ${JD2_UPDATE_VOL_NAME:-jd2-update-vol}
+
+  jd-vol:
+    name: ${JD2_JD_VOL_NAME:-jd2-jd-vol}
+
+  libs-vol:
+    name: ${JD2_LIBS_VOL_NAME:-jd2-libs-vol}
+
+  extensions-vol:
+    name: ${JD2_EXTENSIONS_VOL_NAME:-jd2-extensions-vol}
+
+  tools-vol:
+    name: ${JD2_TOOLS_VOL_NAME:-jd2-tools-vol}
+
+  translations-vol:
+    name: ${JD2_TRANSLATIONS_VOL_NAME:-jd2-translations-vol}
+
+  themes-vol:
+    name: ${JD2_THEMES_VOL_NAME:-jd2-themes-vol}
+
+  licenses-vol:
+    name: ${JD2_LICENSES_VOL_NAME:-jd2-licenses-vol}
