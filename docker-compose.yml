@@ -21,6 +21,7 @@ services:
       - jd-vol:/opt/JDownloader/jd
       - libs-vol:/opt/JDownloader/libs
       - extensions-vol:/opt/JDownloader/extensions
+      - tmp-vol:/opt/JDownloader/tmp
       - tools-vol:/opt/JDownloader/tools
       - translations-vol:/opt/JDownloader/translations
       - themes-vol:/opt/JDownloader/themes
@@ -70,6 +71,9 @@ volumes:
 
   extensions-vol:
     name: ${JD2_EXTENSIONS_VOL_NAME:-jd2-extensions-vol}
+
+  tmp-vol:
+    name: ${JD2_TMP_VOL_NAME:-jd2-tmp-vol}
 
   tools-vol:
     name: ${JD2_TOOLS_VOL_NAME:-jd2-tools-vol}
