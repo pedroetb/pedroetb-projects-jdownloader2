@@ -34,7 +34,7 @@ services:
         window: ${JD2_RESTART_POLICY_WINDOW:-2m}
       placement:
         constraints:
-          - ${JD2_PLACEMENT_CONSTRAINT_NAME} == ${JD2_PLACEMENT_CONSTRAINT_VALUE}
+          - ${JD2_PLACEMENT_CONSTRAINT:-node.hostname == node}
       resources:
         limits:
           cpus: "${JD2_LIMITS_CPUS:-1}"
