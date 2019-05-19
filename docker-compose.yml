@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   jdownloader2:
-    image: jaymoulin/jdownloader:${IMAGE_TAG:-latest}
+    image: ${IMAGE_NAME:-jaymoulin/jdownloader}:${IMAGE_TAG:-latest}
     networks:
       - jd2-net
     ports:
@@ -31,15 +31,13 @@ services:
       replicas: ${JD2_REPLICAS:-1}
       restart_policy:
         delay: ${JD2_RESTART_POLICY_DELAY:-5s}
-        window: ${JD2_RESTART_POLICY_WINDOW:-2m}
-      placement:
-        constraints:
-          - ${JD2_PLACEMENT_CONSTRAINT:-node.hostname == node}
+        window: ${JD2_RESTART_POLICY_WINDOW:-5m}
       resources:
         limits:
-          cpus: "${JD2_LIMITS_CPUS:-1}"
+          cpus: '${JD2_LIMITS_CPUS:-1}'
           memory: ${JD2_LIMITS_MEMORY:-256M}
         reservations:
+          cpus: '${JD2_RESERVATIONS_CPUS:-0.001}'
           memory: ${JD2_RESERVATIONS_MEMORY:-128M}
 
 networks:
@@ -59,6 +57,11 @@ volumes:
 
   cfg-vol:
     name: ${JD2_CFG_VOL_NAME:-jd2-cfg-vol}
+    driver: local
+    driver_opts:
+      type: ${JD2_CFG_VOLUME_TYPE}
+      o: ${JD2_CFG_VOLUME_OPTIONS}
+      device: ${JD2_CFG_VOLUME_DEVICE}
 
   update-vol:
     name: ${JD2_UPDATE_VOL_NAME:-jd2-update-vol}
