@@ -4,16 +4,16 @@ services:
   jdownloader2:
     image: ${IMAGE_NAME:-jaymoulin/jdownloader}:${IMAGE_TAG:-latest}
     networks:
-      - jd2-net
+      jd2-net:
     ports:
-      - target: ${JD2_DATA_PORT}
-        published: ${JD2_DATA_PORT}
+      - target: ${DATA_PORT}
+        published: ${DATA_PORT}
         protocol: tcp
-        mode: ${JD2_PORT_MODE}
-      - target: ${JD2_DATA_PORT}
-        published: ${JD2_DATA_PORT}
+        mode: ${PORT_MODE}
+      - target: ${DATA_PORT}
+        published: ${DATA_PORT}
         protocol: udp
-        mode: ${JD2_PORT_MODE}
+        mode: ${PORT_MODE}
     volumes:
       - data-vol:/root/Downloads
       - cfg-vol:/opt/JDownloader/cfg
@@ -28,64 +28,65 @@ services:
       - licenses-vol:/opt/JDownloader/licenses
     deploy:
       mode: replicated
-      replicas: ${JD2_REPLICAS:-1}
+      replicas: ${REPLICAS:-1}
       restart_policy:
-        delay: ${JD2_RESTART_POLICY_DELAY:-5s}
-        window: ${JD2_RESTART_POLICY_WINDOW:-5m}
+        delay: ${RESTART_DELAY:-5s}
+      update_config:
+        delay: ${UPDATE_DELAY:-1m}
       resources:
         limits:
-          cpus: '${JD2_LIMITS_CPUS:-1}'
-          memory: ${JD2_LIMITS_MEMORY:-256M}
+          cpus: '${RESOURCES_LIMITS_CPUS:-1}'
+          memory: ${RESOURCES_LIMITS_MEMORY:-256M}
         reservations:
-          cpus: '${JD2_RESERVATIONS_CPUS:-0.001}'
-          memory: ${JD2_RESERVATIONS_MEMORY:-128M}
+          cpus: '${RESOURCES_RESERVATIONS_CPUS:-0.001}'
+          memory: ${RESOURCES_RESERVATIONS_MEMORY:-128M}
 
 networks:
   jd2-net:
     name: ${JD2_NET_NAME:-jd2-net}
-    driver: overlay
+    driver: ${JD2_NET_DRIVER:-overlay}
     attachable: ${JD2_NET_ATTACHABLE:-true}
 
 volumes:
   data-vol:
-    name: ${JD2_DATA_VOL_NAME:-jd2-data-vol}
+    name: ${DATA_VOL_NAME:-jd2-data-vol}
     driver: local
     driver_opts:
-      type: ${JD2_DATA_VOLUME_TYPE}
-      o: ${JD2_DATA_VOLUME_OPTIONS}
-      device: ${JD2_DATA_VOLUME_DEVICE}
+      type: ${DATA_VOL_TYPE}
+      o: ${DATA_VOL_OPTIONS}
+      device: ${DATA_VOL_DEVICE}
 
   cfg-vol:
-    name: ${JD2_CFG_VOL_NAME:-jd2-cfg-vol}
+    name: ${CFG_VOL_NAME:-jd2-cfg-vol}
     driver: local
     driver_opts:
-      type: ${JD2_CFG_VOLUME_TYPE}
-      o: ${JD2_CFG_VOLUME_OPTIONS}
-      device: ${JD2_CFG_VOLUME_DEVICE}
+      type: ${CFG_VOL_TYPE}
+      o: ${CFG_VOL_OPTIONS}
+      device: ${CFG_VOL_DEVICE}
 
   update-vol:
-    name: ${JD2_UPDATE_VOL_NAME:-jd2-update-vol}
+    name: ${UPDATE_VOL_NAME:-jd2-update-vol}
 
   jd-vol:
-    name: ${JD2_JD_VOL_NAME:-jd2-jd-vol}
+    name: ${JD_VOL_NAME:-jd2-jd-vol}
 
   libs-vol:
-    name: ${JD2_LIBS_VOL_NAME:-jd2-libs-vol}
+    name: ${LIBS_VOL_NAME:-jd2-libs-vol}
 
   extensions-vol:
-    name: ${JD2_EXTENSIONS_VOL_NAME:-jd2-extensions-vol}
+    name: ${EXTENSIONS_VOL_NAME:-jd2-extensions-vol}
 
   tmp-vol:
-    name: ${JD2_TMP_VOL_NAME:-jd2-tmp-vol}
+    name: ${TMP_VOL_NAME:-jd2-tmp-vol}
 
   tools-vol:
-    name: ${JD2_TOOLS_VOL_NAME:-jd2-tools-vol}
+    name: ${TOOLS_VOL_NAME:-jd2-tools-vol}
 
   translations-vol:
-    name: ${JD2_TRANSLATIONS_VOL_NAME:-jd2-translations-vol}
+    name: ${TRANSLATIONS_VOL_NAME:-jd2-translations-vol}
 
   themes-vol:
-    name: ${JD2_THEMES_VOL_NAME:-jd2-themes-vol}
+    name: ${THEMES_VOL_NAME:-jd2-themes-vol}
 
   licenses-vol:
-    name: ${JD2_LICENSES_VOL_NAME:-jd2-licenses-vol}
+    name: ${LICENSES_VOL_NAME:-jd2-licenses-vol}
