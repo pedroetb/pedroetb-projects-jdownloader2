@@ -1,0 +1,13 @@
+include:
+  - project: 'pedroetb-projects/gitlab-ci-templates'
+    ref: master
+    file: '/deployment.yml'
+
+stages:
+  - deploy
+
+.deploy:
+  variables:
+    STACK: jd2
+    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}
+    STATUS_CHECK_DELAY: 300
